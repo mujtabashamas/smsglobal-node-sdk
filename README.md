@@ -36,17 +36,25 @@ npm install smsglobal-node-sdk
 
 To use the SDK, first, you need to initialize it with your SMSGlobal API key and secret.
 
+### Initialization
+
+To use the SDK, you need to initialize it with your SMSGlobal API key and secret by passing a configuration object to the `init` function provided by the SDK.
+
 ```javascript
-const {
-  autoTopupService,
-  contactGroupService,
-  dedicatedNumberService,
-  optOutService,
-  sharedPoolService,
-  smsService,
-  smsIncomingService,
-  userService,
-} = require('smsglobal-node-sdk');
+// Import the SDK
+const SmsGlobal = require('smsglobal-node-sdk');
+
+// Your custom configuration
+const config = {
+  apiKey: 'your-api-key', // Replace with your actual API key
+  apiSecret: 'your-api-secret', // Replace with your actual API secret
+};
+
+// Initialize the SDK with your configuration
+const smsglobal = SmsGlobal.init(config);
+
+// Destructure the services you want to use
+const { autoTopupService, contactGroupService } = smsglobal;
 
 // Example: Fetching Auto-Topup Information
 (async () => {

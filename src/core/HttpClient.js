@@ -5,7 +5,9 @@ const ErrorHandler = require('./ErrorHandler');
 const config = require('../config');
 
 class HttpClient {
-  constructor() {
+  constructor(apiKey, apiSecret) {
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
     this.client = axios.create({
       baseURL: config.baseURL,
       headers: {
@@ -13,8 +15,6 @@ class HttpClient {
         Accept: 'application/json',
       },
     });
-    this.apiKey = config.apiKey;
-    this.apiSecret = config.apiSecret;
   }
 
   async request(method, endpoint, data = {}, extraHeaders = {}) {

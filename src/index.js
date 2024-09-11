@@ -9,26 +9,32 @@ const SmsService = require('./modules/SmsService');
 const SmsIncomingService = require('./modules/SmsIncomingService');
 const UserService = require('./modules/UserService');
 
-// Initialize the HttpClient once
-const httpClient = new HttpClient();
+function init({ apiKey, apiSecret }) {
+  // Initialize the HttpClient once
+  const httpClient = new HttpClient(apiKey, apiSecret);
 
-// Initialize services with the shared HttpClient
-const autoTopupService = new AutoTopupService(httpClient);
-const contactGroupService = new ContactGroupService(httpClient);
-const dedicatedNumberService = new DedicatedNumberService(httpClient);
-const optOutsService = new OptOutsService(httpClient);
-const sharedPoolService = new SharedPoolService(httpClient);
-const smsService = new SmsService(httpClient);
-const smsIncomingService = new SmsIncomingService(httpClient);
-const userService = new UserService(httpClient);
+  // Initialize services with the shared HttpClient
+  const autoTopupService = new AutoTopupService(httpClient);
+  const contactGroupService = new ContactGroupService(httpClient);
+  const dedicatedNumberService = new DedicatedNumberService(httpClient);
+  const optOutsService = new OptOutsService(httpClient);
+  const sharedPoolService = new SharedPoolService(httpClient);
+  const smsService = new SmsService(httpClient);
+  const smsIncomingService = new SmsIncomingService(httpClient);
+  const userService = new UserService(httpClient);
+
+  return {
+    autoTopupService,
+    contactGroupService,
+    dedicatedNumberService,
+    optOutsService,
+    sharedPoolService,
+    smsService,
+    smsIncomingService,
+    userService,
+  };
+}
 
 module.exports = {
-  autoTopupService,
-  contactGroupService,
-  dedicatedNumberService,
-  optOutsService,
-  sharedPoolService,
-  smsService,
-  smsIncomingService,
-  userService,
+  init,
 };
