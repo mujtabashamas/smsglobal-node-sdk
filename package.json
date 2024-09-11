@@ -1,0 +1,15 @@
+{
+  "name": "smsglobal-node-sdk",
+  "version": "1.0.0",
+  "description": "Node SDK to interact with smsglobal REST endpoints.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sdk",
+    "nodejs"
+  ],
+  "author": "Mujtaba Shamas",
+  "license": "MIT"
+}
