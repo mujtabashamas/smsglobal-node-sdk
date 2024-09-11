@@ -2,10 +2,10 @@
   "name": "smsglobal-node-sdk",
   "version": "1.0.0",
   "description": "Node SDK to interact with SMSGlobal REST endpoints.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive --timeout 5000 --reporter spec",
-    "start": "node index.js",
+    "start": "node src/index.js",
     "build": "npm run test && npm run lint"
   },
   "keywords": [
