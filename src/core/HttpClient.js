@@ -1,18 +1,20 @@
+// src/core/HttpClient.js
 const axios = require('axios');
 const Auth = require('./Auth');
 const ErrorHandler = require('./ErrorHandler');
+const config = require('../config');
 
 class HttpClient {
-  constructor(baseURL, apiKey, apiSecret) {
+  constructor() {
     this.client = axios.create({
-      baseURL,
+      baseURL: config.baseURL,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
-    this.apiKey = apiKey;
-    this.apiSecret = apiSecret;
+    this.apiKey = config.apiKey;
+    this.apiSecret = config.apiSecret;
   }
 
   async request(method, endpoint, data = {}, extraHeaders = {}) {
