@@ -1,15 +1,41 @@
 {
   "name": "smsglobal-node-sdk",
   "version": "1.0.0",
-  "description": "Node SDK to interact with smsglobal REST endpoints.",
+  "description": "Node SDK to interact with SMSGlobal REST endpoints.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive --timeout 5000 --reporter spec",
+    "start": "node index.js",
+    "build": "npm run test && npm run lint"
   },
   "keywords": [
     "sdk",
-    "nodejs"
+    "nodejs",
+    "SMS",
+    "API",
+    "REST",
+    "SMSGlobal",
+    "Messaging"
   ],
   "author": "Mujtaba Shamas",
-  "license": "MIT"
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.7.3",
+    "sinon": "^18.0.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mujtabashamas/smsglobal-node-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mujtabashamas/smsglobal-node-sdk/issues"
+  },
+  "homepage": "https://github.com/mujtabashamas/smsglobal-node-sdk#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
