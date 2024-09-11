@@ -14,14 +14,21 @@ const httpClient = new HttpClient();
 
 // Initialize services with the shared HttpClient
 const autoTopupService = new AutoTopupService(httpClient);
+const contactGroupService = new ContactGroupService(httpClient);
+const dedicatedNumberService = new DedicatedNumberService(httpClient);
+const optOutsService = new OptOutsService(httpClient);
+const sharedPoolService = new SharedPoolService(httpClient);
+const smsService = new SmsService(httpClient);
+const smsIncomingService = new SmsIncomingService(httpClient);
+const userService = new UserService(httpClient);
 
 module.exports = {
-  AutoTopupService,
-  ContactGroupService,
-  DedicatedNumberService,
-  OptOutsService,
-  SharedPoolService,
-  SmsService,
-  SmsIncomingService,
-  UserService,
+  autoTopupService,
+  contactGroupService,
+  dedicatedNumberService,
+  optOutsService,
+  sharedPoolService,
+  smsService,
+  smsIncomingService,
+  userService,
 };
