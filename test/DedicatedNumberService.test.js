@@ -2,16 +2,23 @@ const chai = require('chai');
 const sinon = require('sinon');
 const expect = chai.expect;
 
-const DedicatedNumberService = require('../src/modules/DedicatedNumberService');
-const HttpClient = require('../src/core/HttpClient');
+const SmsGlobal = require('../src/index'); // Import the SDK entry point
 
 describe('DedicatedNumberService', () => {
   let dedicatedNumberService;
   let mockHttpClient;
 
   beforeEach(() => {
-    mockHttpClient = sinon.createStubInstance(HttpClient);
-    dedicatedNumberService = new DedicatedNumberService(mockHttpClient);
+    const config = {
+      apiKey: 'mock-api-key',
+      apiSecret: 'mock-api-secret',
+      baseURL: 'https://api.smsglobal.com',
+    };
+
+    const smsglobal = SmsGlobal.init(config);
+    dedicatedNumberService = smsglobal.dedicatedNumberService;
+
+    mockHttpClient = sinon.stub(dedicatedNumberService.httpClient, 'request');
   });
 
   afterEach(() => {
@@ -19,27 +26,19 @@ describe('DedicatedNumberService', () => {
   });
 
   it('should fetch dedicated numbers successfully', async () => {
-    const mockResponse = [
-      {
-        id: 1,
-        userId: 101,
-        msisdn: '1234567890',
-        type: 'HTTP Callback',
-      },
-    ];
-
-    mockHttpClient.request.resolves(mockResponse);
+    const mockResponse = [{ id: 1, msisdn: '61447100250', type: 'SMPP' }];
+    mockHttpClient.resolves(mockResponse);
 
     const result = await dedicatedNumberService.getDedicatedNumbers();
 
     expect(result).to.deep.equal(mockResponse);
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/dedicated-number')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/dedicated-number')).to.be.true;
   });
 
   it('should throw an error if fetching dedicated numbers fails', async () => {
     const mockError = new Error('Failed to fetch dedicated numbers');
-    mockHttpClient.request.rejects(mockError);
+    mockHttpClient.rejects(mockError);
 
     try {
       await dedicatedNumberService.getDedicatedNumbers();
@@ -47,7 +46,7 @@ describe('DedicatedNumberService', () => {
       expect(error).to.equal(mockError);
     }
 
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/dedicated-number')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/dedicated-number')).to.be.true;
   });
 });

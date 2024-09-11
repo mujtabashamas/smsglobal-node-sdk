@@ -2,16 +2,26 @@ const chai = require('chai');
 const sinon = require('sinon');
 const expect = chai.expect;
 
-const AutoTopupService = require('../src/modules/AutoTopupService');
-const HttpClient = require('../src/core/HttpClient');
+const SmsGlobal = require('../src/index'); // Import the SDK entry point
 
 describe('AutoTopupService', () => {
   let autoTopupService;
   let mockHttpClient;
 
   beforeEach(() => {
-    mockHttpClient = sinon.createStubInstance(HttpClient);
-    autoTopupService = new AutoTopupService(mockHttpClient);
+    // Create a mock configuration object
+    const config = {
+      apiKey: 'mock-api-key',
+      apiSecret: 'mock-api-secret',
+      baseURL: 'https://api.smsglobal.com', // Use the default baseURL or a mock URL for testing
+    };
+
+    // Initialize the SDK with mock configuration
+    const smsglobal = SmsGlobal.init(config);
+    autoTopupService = smsglobal.autoTopupService;
+
+    // Mock the HttpClient within the service
+    mockHttpClient = sinon.stub(autoTopupService.httpClient, 'request');
   });
 
   afterEach(() => {
@@ -19,28 +29,20 @@ describe('AutoTopupService', () => {
   });
 
   it('should fetch auto-topup information successfully', async () => {
-    const mockResponse = {
-      disabled: false,
-      balanceThreshold: 100,
-      balanceAmount: 50,
-      card: {
-        number: '**** **** **** 1234',
-        type: 'Visa',
-      },
-    };
+    const mockResponse = { disabled: false, balanceThreshold: 100 };
 
-    mockHttpClient.request.resolves(mockResponse);
+    mockHttpClient.resolves(mockResponse); // Mock the request method to resolve with mockResponse
 
     const result = await autoTopupService.getAutoTopupInfo();
 
     expect(result).to.deep.equal(mockResponse);
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/auto-topup')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/auto-topup')).to.be.true;
   });
 
   it('should throw an error if fetching auto-topup information fails', async () => {
     const mockError = new Error('Failed to fetch auto-topup information');
-    mockHttpClient.request.rejects(mockError);
+    mockHttpClient.rejects(mockError); // Mock the request method to reject with mockError
 
     try {
       await autoTopupService.getAutoTopupInfo();
@@ -48,7 +50,7 @@ describe('AutoTopupService', () => {
       expect(error).to.equal(mockError);
     }
 
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/auto-topup')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/auto-topup')).to.be.true;
   });
 });

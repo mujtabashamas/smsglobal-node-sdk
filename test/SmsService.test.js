@@ -2,45 +2,61 @@ const chai = require('chai');
 const sinon = require('sinon');
 const expect = chai.expect;
 
-const SmsService = require('../src/modules/SmsService');
-const HttpClient = require('../src/core/HttpClient');
+const SmsGlobal = require('../src/index'); // Import the SDK entry point
 
 describe('SmsService', () => {
   let smsService;
   let mockHttpClient;
 
   beforeEach(() => {
-    mockHttpClient = sinon.createStubInstance(HttpClient);
-    smsService = new SmsService(mockHttpClient);
+    const config = {
+      apiKey: 'mock-api-key',
+      apiSecret: 'mock-api-secret',
+      baseURL: 'https://api.smsglobal.com',
+    };
+
+    const smsglobal = SmsGlobal.init(config);
+    smsService = smsglobal.smsService;
+
+    mockHttpClient = sinon.stub(smsService.httpClient, 'request');
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should fetch outgoing messages successfully', async () => {
-    const mockResponse = { messages: [{ id: 1, destination: '1234567890', status: 'delivered' }] };
+  it('should send SMS successfully', async () => {
+    const mockResponse = { messages: [{ id: 1, destination: '61447100250', status: 'delivered' }] };
+    const smsData = {
+      destination: '61447100250',
+      message: 'Hello from SMSGlobal!',
+      origin: 'Test',
+    };
 
-    mockHttpClient.request.resolves(mockResponse);
+    mockHttpClient.resolves(mockResponse);
 
-    const result = await smsService.getOutgoingMessages();
+    const result = await smsService.sendSms(smsData);
 
     expect(result).to.deep.equal(mockResponse);
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/sms')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('POST', '/v2/sms')).to.be.true;
   });
 
-  it('should throw an error if fetching outgoing messages fails', async () => {
-    const mockError = new Error('Failed to fetch outgoing messages');
-    mockHttpClient.request.rejects(mockError);
+  it('should throw an error if sending SMS fails', async () => {
+    const mockError = new Error('Failed to send SMS');
+    mockHttpClient.rejects(mockError);
 
     try {
-      await smsService.getOutgoingMessages();
+      await smsService.sendSms({
+        destination: '61447100250',
+        message: 'Hello from SMSGlobal!',
+        origin: 'Test',
+      });
     } catch (error) {
       expect(error).to.equal(mockError);
     }
 
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/sms')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('POST', '/v2/sms')).to.be.true;
   });
 });

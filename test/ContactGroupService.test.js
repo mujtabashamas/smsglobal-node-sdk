@@ -2,16 +2,23 @@ const chai = require('chai');
 const sinon = require('sinon');
 const expect = chai.expect;
 
-const ContactGroupService = require('../src/modules/ContactGroupService');
-const HttpClient = require('../src/core/HttpClient');
+const SmsGlobal = require('../src/index'); // Import the SDK entry point
 
 describe('ContactGroupService', () => {
   let contactGroupService;
   let mockHttpClient;
 
   beforeEach(() => {
-    mockHttpClient = sinon.createStubInstance(HttpClient);
-    contactGroupService = new ContactGroupService(mockHttpClient);
+    const config = {
+      apiKey: 'mock-api-key',
+      apiSecret: 'mock-api-secret',
+      baseURL: 'https://api.smsglobal.com',
+    };
+
+    const smsglobal = SmsGlobal.init(config);
+    contactGroupService = smsglobal.contactGroupService;
+
+    mockHttpClient = sinon.stub(contactGroupService.httpClient, 'request');
   });
 
   afterEach(() => {
@@ -19,33 +26,27 @@ describe('ContactGroupService', () => {
   });
 
   it('should fetch contact group by ID successfully', async () => {
-    const mockResponse = {
-      id: 123,
-      name: 'Friends',
-      keyword: 'FRIENDS',
-      contactCount: 10,
-    };
+    const mockResponse = { id: 1, name: 'Test Group' };
+    mockHttpClient.resolves(mockResponse);
 
-    mockHttpClient.request.resolves(mockResponse);
-
-    const result = await contactGroupService.getContactGroupById(123);
+    const result = await contactGroupService.getContactGroupById(1);
 
     expect(result).to.deep.equal(mockResponse);
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/group/123')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/group/1')).to.be.true;
   });
 
-  it('should throw an error if fetching contact group fails', async () => {
+  it('should throw an error if fetching contact group by ID fails', async () => {
     const mockError = new Error('Failed to fetch contact group');
-    mockHttpClient.request.rejects(mockError);
+    mockHttpClient.rejects(mockError);
 
     try {
-      await contactGroupService.getContactGroupById(123);
+      await contactGroupService.getContactGroupById(1);
     } catch (error) {
       expect(error).to.equal(mockError);
     }
 
-    expect(mockHttpClient.request.calledOnce).to.be.true;
-    expect(mockHttpClient.request.calledWith('GET', '/v2/group/123')).to.be.true;
+    expect(mockHttpClient.calledOnce).to.be.true;
+    expect(mockHttpClient.calledWith('GET', '/v2/group/1')).to.be.true;
   });
 });
